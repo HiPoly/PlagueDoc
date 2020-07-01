@@ -63,7 +63,7 @@ public class Actions : MonoBehaviour
         }
 
         //Tilty Stuff
-        Quaternion target = Quaternion.Euler(0, 0, 0);
+        Quaternion target = Quaternion.Euler(0, 180, 0);
         transform.rotation = Quaternion.Slerp(transform.rotation, target, Time.deltaTime * smoothing);
     }
 }
