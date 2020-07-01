@@ -15,21 +15,21 @@ public class Actions : MonoBehaviour
 
     public int stationNumber = 2;
 
-    // Start is called before the first frame update
-    void Start()
+    void Enable()
     {
-
 
     }
 
-    // Update is called once per frame
+    // Drug making system
+    public List<int> drug;
+    public int drugfails; //1 is success, any more is a fail, I realise this is dumb, sorry
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             if (stationNumber != 1)
             {
-                stationNumber = stationNumber - 1;
+                stationNumber -= 1;
                 transform.position = transform.position + new Vector3(-1 * docSpeed, 0, 0);
                 transform.Rotate(0.0f, 0.0f, -1 * tiltAngle);
             }
@@ -37,9 +37,9 @@ public class Actions : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if (stationNumber != 3)
+            if (stationNumber != 4)
             {
-                stationNumber = stationNumber + 1;
+                stationNumber += 1;
                 transform.position = transform.position + new Vector3(+1 * docSpeed, 0, 0);
                 transform.Rotate(0.0f, 0.0f, 1 * tiltAngle);
             }
@@ -50,21 +50,51 @@ public class Actions : MonoBehaviour
         {
             if (stationNumber == 1)
             {
-                Debug.Log("red");
+                drug.Add(1);
             }
             if (stationNumber == 2)
             {
-                Debug.Log("green");
+                drug.Add(2);
             }
             if (stationNumber == 3)
             {
-                Debug.Log("blue");
+                drug.Add(3);
+            }
+            if (stationNumber == 4)
+            {
+                drugfails = 1;
+                if (drug[0] != NPCoder[0])
+                {
+                    drugfails += 1;
+                }
+
+                if (drug[1] != NPCoder[1])
+                {
+                    drugfails += 1;
+                }
+
+                if (drug[2] != NPCoder[2])
+                {
+                    drugfails += 1;
+                }
+
+                drug.Clear();
+                NPCoder.Clear();
             }
         }
 
         //Tilty Stuff
         Quaternion target = Quaternion.Euler(0, 180, 0);
         transform.rotation = Quaternion.Slerp(transform.rotation, target, Time.deltaTime * smoothing);
+    }
+
+
+    public List<int> NPCoder;
+    public void RecieveOrder(int order1,int order2,int order3)
+    {
+        NPCoder.Add(order1);
+        NPCoder.Add(order2);
+        NPCoder.Add(order3);
     }
 }
 
