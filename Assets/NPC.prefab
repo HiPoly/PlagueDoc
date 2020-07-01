@@ -128,7 +128,14 @@ MonoBehaviour:
   movefowardback: 0
   tiltinterval: 0.5
   tiltlimit: 7
+  state: 0
+  wanttobuysomething: 0
+  queue: 0
+  haveiqueuedalready: 0
   other: {fileID: 1299583652}
+  panickedrunspeed: 8
+  queueSpeed: 8
+  finishedserving: 0
 --- !u!135 &1299583652
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -140,7 +147,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 1.08
+  m_Radius: 6.24
   m_Center: {x: 0, y: 1.69, z: 0}
 --- !u!1 &4241312921430531471
 GameObject:
