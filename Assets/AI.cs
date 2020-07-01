@@ -22,13 +22,15 @@ public class AI : MonoBehaviour
     private Actions Player;
     public float wanttobuysomething;
     int placeOnList;
+
     public enum State
     {
         WALKINGPAST,
         QUEUING,
         FLEEING,
         PANICKING,
-        BEINGSERVED
+        BEINGSERVED,
+        LEAVING
     }
 
     void OnEnable()
@@ -153,6 +155,10 @@ public class AI : MonoBehaviour
                 Beingserved();
                 gameObject.tag = "NPC";
                 break;
+            case State.LEAVING:
+                Leaving();
+                gameObject.tag = "NPC";
+                break;
 
         }
     }
@@ -186,6 +192,21 @@ public class AI : MonoBehaviour
                 movefowardback = Random.Range(0f, 10f);
                 flipflop = true;
             }
+        }
+    }
+
+    void Leaving()
+    {
+        tiltlimit = 6f;
+        moveleftright = -4f;
+        if (transform.position.z > -6)
+        {
+            movefowardback = -12f;
+        }
+        if (transform.position.z < -6)
+        {
+            movefowardback = 0f;
+            state = State.WALKINGPAST;
         }
     }
 
@@ -345,7 +366,7 @@ public class AI : MonoBehaviour
         if (finishedserving == true)
         {
             NPCM.RemoveNPC(gameObject);
-            state = State.WALKINGPAST;
+            state = State.LEAVING;
         }
         dist = Vector3.Distance(serveposition.transform.position, transform.position);
 
@@ -401,7 +422,7 @@ public class AI : MonoBehaviour
         if(fails == 1)
         {
             colourchange = GetComponent<Renderer>();
-            colourchange.material.SetColor("_Color",Color.blue);
+            colourchange.material.SetColor("_Color",Color.green);
             finishedserving = true;
             Player.drugfails = 0;
         }

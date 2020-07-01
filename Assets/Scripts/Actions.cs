@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Actions : MonoBehaviour
 {
@@ -14,6 +15,10 @@ public class Actions : MonoBehaviour
     float docSpeed = 1.125f;
 
     public int stationNumber = 2;
+
+    public Text ShowOrder1;
+    public Text ShowOrder2;
+    public Text ShowOrder3;
 
     void Enable()
     {
@@ -93,8 +98,52 @@ public class Actions : MonoBehaviour
     public void RecieveOrder(int order1,int order2,int order3)
     {
         NPCoder.Add(order1);
+        if (order1 == 1)
+        {
+            ShowOrder1.text = "Red";
+        }
+
+        if (order1 == 2)
+        {
+            ShowOrder1.text = "Green";
+        }
+
+        if (order1 == 3)
+        {
+            ShowOrder1.text = "Blue";
+        }
+
         NPCoder.Add(order2);
+        if (order2 == 1)
+        {
+            ShowOrder2.text = "Red";
+        }
+
+        if (order2 == 2)
+        {
+            ShowOrder2.text = "Green";
+        }
+
+        if (order2 == 3)
+        {
+            ShowOrder2.text = "Blue";
+        }
+
         NPCoder.Add(order3);
+        if (order3 == 1)
+        {
+            ShowOrder3.text = "Red";
+        }
+
+        if (order3 == 2)
+        {
+            ShowOrder3.text = "Green";
+        }
+
+        if (order3 == 3)
+        {
+            ShowOrder3.text = "Blue";
+        }
     }
 }
 
