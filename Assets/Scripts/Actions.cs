@@ -98,52 +98,22 @@ public class Actions : MonoBehaviour
     public void RecieveOrder(int order1,int order2,int order3)
     {
         NPCoder.Add(order1);
-        if (order1 == 1)
-        {
-            ShowOrder1.text = "Red";
-        }
-
-        if (order1 == 2)
-        {
-            ShowOrder1.text = "Green";
-        }
-
-        if (order1 == 3)
-        {
-            ShowOrder1.text = "Blue";
-        }
-
         NPCoder.Add(order2);
-        if (order2 == 1)
-        {
-            ShowOrder2.text = "Red";
-        }
-
-        if (order2 == 2)
-        {
-            ShowOrder2.text = "Green";
-        }
-
-        if (order2 == 3)
-        {
-            ShowOrder2.text = "Blue";
-        }
-
         NPCoder.Add(order3);
-        if (order3 == 1)
-        {
-            ShowOrder3.text = "Red";
-        }
+        ShowOrder3.text = TranslateOrder(order1);
+        ShowOrder3.text = TranslateOrder(order2);
+        ShowOrder3.text = TranslateOrder(order3);
+    }
 
-        if (order3 == 2)
+    private string TranslateOrder(int order)
+    {
+        switch (order)
         {
-            ShowOrder3.text = "Green";
+            case 1: return "Red";
+            case 2: return "Green";
+            case 3: return "Blue";
         }
-
-        if (order3 == 3)
-        {
-            ShowOrder3.text = "Blue";
-        }
+        return "I AM ERROR";
     }
 }
 

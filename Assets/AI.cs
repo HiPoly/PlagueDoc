@@ -24,6 +24,7 @@ public class AI : MonoBehaviour
     int placeOnList;
 
     public float fleeingspeed;
+    public Animator animator;
     public enum State
     {
         WALKINGPAST,
@@ -134,29 +135,35 @@ public class AI : MonoBehaviour
                 Walkingpast();
                 gameObject.tag = "NPC";
                 previousState = state;
+                animator.ResetTrigger("Panic");
                 break;
             case State.QUEUING:
                 Queuing();
                 gameObject.tag = "NPC";
                 previousState = state;
+                animator.ResetTrigger("Panic");
                 break;
             case State.FLEEING:
                 Fleeing();
                 gameObject.tag = "NPC";
+                animator.ResetTrigger("Panic");
                 break;
             case State.PANICKING:
                 Panicking();
                 gameObject.tag = "DANGEROUSNPC";
+                animator.SetTrigger("Panic");
                 break;
             case State.BEINGSERVED:
                 Beingserved();
                 gameObject.tag = "NPC";
                 previousState = state;
+                animator.ResetTrigger("Panic");
                 break;
             case State.LEAVING:
                 Leaving();
                 gameObject.tag = "NPC";
                 previousState = state;
+                animator.ResetTrigger("Panic");
                 break;
 
         }
