@@ -62,19 +62,6 @@ public class AI : MonoBehaviour
             movefowardback = 0f;
             moveleftright = 0f;
 
-            if (NPCsInRange.Count == 0)
-            {
-                int AmIOnList = NPCM.CheckPlace(gameObject);
-                if (AmIOnList == 1)
-                {
-                    state = State.QUEUING;
-                }
-
-                if (AmIOnList == 0)
-                {
-                    state = State.WALKINGPAST;
-                }
-            }
         }
         
     }
@@ -93,12 +80,34 @@ public class AI : MonoBehaviour
         }
     }
 
+    public int previousState;
     void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("DANGEROUSNPC"))
         {
             NPCsInRange.Remove(other.attachedRigidbody.gameObject);
-          
+            if (!NPCsInRange.Contains(other.attachedRigidbody.gameObject))
+            {
+                if (previousState == 1)
+                {
+                    state = State.WALKINGPAST;
+                }
+
+                if (previousState == 2)
+                {
+                    state = State.QUEUING;
+                }
+
+                if (previousState == 3)
+                {
+                    state = State.BEINGSERVED;
+                }
+
+                if (previousState == 4)
+                {
+                    state = State.LEAVING;
+                }
+            }
         }
     }
 
@@ -138,10 +147,12 @@ public class AI : MonoBehaviour
             case State.WALKINGPAST:
                 Walkingpast();
                 gameObject.tag = "NPC";
+                previousState = 1;
                 break;
             case State.QUEUING:
                 Queuing();
                 gameObject.tag = "NPC";
+                previousState = 2;
                 break;
             case State.FLEEING:
                 Fleeing();
@@ -154,10 +165,12 @@ public class AI : MonoBehaviour
             case State.BEINGSERVED:
                 Beingserved();
                 gameObject.tag = "NPC";
+                previousState = 3;
                 break;
             case State.LEAVING:
                 Leaving();
                 gameObject.tag = "NPC";
+                previousState = 4;
                 break;
 
         }
