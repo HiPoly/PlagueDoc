@@ -23,6 +23,7 @@ public class AI : MonoBehaviour
     public float wanttobuysomething;
     int placeOnList;
 
+    public float fleeingspeed;
     public enum State
     {
         WALKINGPAST,
@@ -32,9 +33,10 @@ public class AI : MonoBehaviour
         BEINGSERVED,
         LEAVING
     }
-
+    float buyrange;
     void OnEnable()
     {
+        buyrange = Random.Range(9f, -5f);
         state = State.WALKINGPAST;
         NPCM = GameObject.FindObjectOfType<NPCManager>();
         Player = GameObject.FindObjectOfType<Actions>();
@@ -44,6 +46,7 @@ public class AI : MonoBehaviour
     }
     public bool queue;
     public bool haveiqueuedalready;
+    public float chancetobuy;
     void Update()
     {
         // Tilt Timer resets after two movements
@@ -53,7 +56,7 @@ public class AI : MonoBehaviour
             timer = 0f;
         }
 
-        if (transform.position.x < Random.Range(9f, -5f) && (wanttobuysomething > 2f) && (haveiqueuedalready == true))
+        if ((transform.position.x < buyrange) && (wanttobuysomething > chancetobuy) && (haveiqueuedalready == true) & (state == State.WALKINGPAST))
         {
             queue = true;
             state = State.QUEUING;
@@ -67,46 +70,38 @@ public class AI : MonoBehaviour
     }
 
     //List of other objects in trigger coliders radius
-    public List<GameObject> NPCsInRange = new List<GameObject>();
+    public List<GameObject> PanicCausersInRange = new List<GameObject>();
     public Collider other;
 
 
-    void OnTriggerEnter(Collider other)
+    void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("DANGEROUSNPC"))
+        if (state != State.PANICKING)
         {
-            NPCsInRange.Add(other.attachedRigidbody.gameObject);
-            state = State.FLEEING;
+            if (other.tag == ("DANGEROUSNPC"))
+            {
+                PanicCausersInRange.Add(other.attachedRigidbody.gameObject);
+                state = State.FLEEING;
+            }
         }
     }
 
-    public int previousState;
+    private State previousState;
     void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("DANGEROUSNPC"))
+        if (state == State.FLEEING)
         {
-            NPCsInRange.Remove(other.attachedRigidbody.gameObject);
-            if (!NPCsInRange.Contains(other.attachedRigidbody.gameObject))
+            if (other.attachedRigidbody == null)
             {
-                if (previousState == 1)
-                {
-                    state = State.WALKINGPAST;
-                }
-
-                if (previousState == 2)
-                {
-                    state = State.QUEUING;
-                }
-
-                if (previousState == 3)
-                {
-                    state = State.BEINGSERVED;
-                }
-
-                if (previousState == 4)
-                {
-                    state = State.LEAVING;
-                }
+                state = previousState;
+                rb.velocity = new Vector3(0f, 0f, 0f);
+                return;
+            }
+            PanicCausersInRange.Remove(other.attachedRigidbody.gameObject);
+            if (PanicCausersInRange.Count == 0)
+            {
+                state = previousState;
+                rb.velocity = new Vector3(0f,0f,0f);
             }
         }
     }
@@ -132,27 +127,18 @@ public class AI : MonoBehaviour
             transform.rotation = Quaternion.Euler(rotation[0], rotation[1] + 0f, rotation[2] - tiltlimit);
         }
 
-        //personal bubble
-        foreach (GameObject AI in NPCsInRange)
-        {
-            if (AI != this)
-            {
-                rb.AddForce((AI.gameObject.transform.position - transform.position).normalized * -4f);
-            }
-        }
-
         //AI States
         switch (state)
         {
             case State.WALKINGPAST:
                 Walkingpast();
                 gameObject.tag = "NPC";
-                previousState = 1;
+                previousState = state;
                 break;
             case State.QUEUING:
                 Queuing();
                 gameObject.tag = "NPC";
-                previousState = 2;
+                previousState = state;
                 break;
             case State.FLEEING:
                 Fleeing();
@@ -165,12 +151,12 @@ public class AI : MonoBehaviour
             case State.BEINGSERVED:
                 Beingserved();
                 gameObject.tag = "NPC";
-                previousState = 3;
+                previousState = state;
                 break;
             case State.LEAVING:
                 Leaving();
                 gameObject.tag = "NPC";
-                previousState = 4;
+                previousState = state;
                 break;
 
         }
@@ -180,6 +166,11 @@ public class AI : MonoBehaviour
     private bool flipflop;
     void Walkingpast()
     {
+        if (NPCM.howfullisqueue > 12)
+        {
+            chancetobuy = 10f;
+        }
+
         timer2 += Time.deltaTime;
 
         if (timer2 > 4f)
@@ -266,6 +257,53 @@ public class AI : MonoBehaviour
             queueposition = GameObject.Find("Q5");
         }
 
+        if (placeOnList == 6)
+        {
+            queueposition = GameObject.Find("Q6");
+        }
+
+        if (placeOnList == 7)
+        {
+            queueposition = GameObject.Find("Q7");
+        }
+
+        if (placeOnList == 8)
+        {
+            queueposition = GameObject.Find("Q8");
+        }
+
+        if (placeOnList == 9)
+        {
+            queueposition = GameObject.Find("Q9");
+        }
+
+        if (placeOnList == 10)
+        {
+            queueposition = GameObject.Find("Q10");
+        }
+
+        if (placeOnList == 11)
+        {
+            queueposition = GameObject.Find("Q11");
+        }
+
+        if (placeOnList == 12)
+        {
+            queueposition = GameObject.Find("Q12");
+        }
+
+        if (placeOnList > 12)
+        {
+            queue = false;
+            NPCM.RemoveNPC(gameObject);
+            state = State.LEAVING;
+        }
+
+        if (queueposition == null)
+        {
+            return;
+        }
+
         if (transform.position.x > queueposition.transform.position.x)
         {
             moveleftright = -queueSpeed;
@@ -289,7 +327,14 @@ public class AI : MonoBehaviour
 
     void Fleeing()
     {
-
+        //personal bubble
+        foreach (GameObject AI in PanicCausersInRange)
+        {
+            if (AI != this)
+            {
+                rb.AddForce((AI.gameObject.transform.position - transform.position).normalized * -fleeingspeed, ForceMode.Impulse);
+            }
+        }
     }
 
     private float panicktimer;
@@ -298,6 +343,8 @@ public class AI : MonoBehaviour
     public float panickedrunspeed;
     void Panicking()
     {
+        tiltlimit = 12;
+        tiltinterval = 0.1f;
 
         if (startpanick == false)
         {
