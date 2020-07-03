@@ -100,20 +100,50 @@ public class Actions : MonoBehaviour
         NPCoder.Add(order1);
         NPCoder.Add(order2);
         NPCoder.Add(order3);
-        ShowOrder3.text = TranslateOrder(order1);
-        ShowOrder3.text = TranslateOrder(order2);
-        ShowOrder3.text = TranslateOrder(order3);
-    }
 
-    private string TranslateOrder(int order)
-    {
-        switch (order)
+        if (order1 == 1)
         {
-            case 1: return "Red";
-            case 2: return "Green";
-            case 3: return "Blue";
+            ShowOrder1.text = "Red";
         }
-        return "I AM ERROR";
+        if (order1 == 2)
+        {
+            ShowOrder1.text = "Green";
+        }
+
+        if (order1 == 3)
+        {
+            ShowOrder1.text = "Blue";
+        }
+
+        if (order2 == 1)
+        {
+            ShowOrder2.text = "Red";
+        }
+        if (order2 == 2)
+        {
+            ShowOrder2.text = "Green";
+        }
+
+        if (order2 == 3)
+        {
+            ShowOrder2.text = "Blue";
+        }
+
+        if (order3 == 1)
+        {
+            ShowOrder3.text = "Red";
+        }
+        if (order3 == 2)
+        {
+            ShowOrder3.text = "Green";
+        }
+
+        if (order3 == 3)
+        {
+            ShowOrder3.text = "Blue";
+        }
+
+
     }
 }
 
