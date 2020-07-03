@@ -25,6 +25,8 @@ public class AI : MonoBehaviour
 
     public float fleeingspeed;
     public Animator animator;
+    public SpriteRenderer Speechbubble;
+    public SpriteRenderer ExclamationMark;
     public enum State
     {
         WALKINGPAST,
@@ -35,6 +37,13 @@ public class AI : MonoBehaviour
         LEAVING
     }
     float buyrange;
+    public float hatrandomizer;
+    public bool VikingMode;
+    public SpriteRenderer Viking;
+    public SpriteRenderer Wizard;
+    public SpriteRenderer Paper;
+    public SpriteRenderer Fireman;
+    public SpriteRenderer Cowboy;
     void OnEnable()
     {
         buyrange = Random.Range(9f, -5f);
@@ -44,6 +53,33 @@ public class AI : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         wanttobuysomething = Random.Range(0f,10f);
         haveiqueuedalready = true;
+        hatrandomizer = Random.Range(0, 15);
+
+        if (hatrandomizer == 10)
+        {
+            Cowboy.enabled = true;
+        }
+
+        if (hatrandomizer == 11) 
+        {
+            Viking.enabled = true;
+            VikingMode = true;
+        }
+
+        if (hatrandomizer == 12) 
+        {
+            Wizard.enabled = true;
+        }
+
+        if (hatrandomizer == 13)
+        {
+            Paper.enabled = true;
+        }
+
+        if (hatrandomizer == 14)
+        {
+            Fireman.enabled = true;
+        }
     }
     public bool queue;
     public bool haveiqueuedalready;
@@ -55,10 +91,12 @@ public class AI : MonoBehaviour
         if (timer > (tiltinterval * 2))
         {
             timer = 0f;
+            ExclamationMark.enabled = false;
         }
 
         if ((transform.position.x < buyrange) && (wanttobuysomething > chancetobuy) && (haveiqueuedalready == true) & (state == State.WALKINGPAST))
         {
+            ExclamationMark.enabled = true;
             queue = true;
             state = State.QUEUING;
             haveiqueuedalready = false;
@@ -105,7 +143,20 @@ public class AI : MonoBehaviour
                 rb.velocity = new Vector3(0f,0f,0f);
             }
         }
+        if (other.tag == "ground")
+        {
+            touchingGround = false;
+        }
     }
+    private void OnTriggerEnter(Collider ground)
+    {
+        if (ground.tag == "ground")
+        {
+            touchingGround = true;
+        }
+    }
+
+    private bool touchingGround;
 
     void FixedUpdate()
     {
@@ -117,16 +168,18 @@ public class AI : MonoBehaviour
         Quaternion rotation = (transform.rotation);
 
 
+            if (touchingGround == true)
+            {
+                if (timer < tiltinterval)
+                {
+                    transform.rotation = Quaternion.Euler(rotation[0], rotation[1] + 0f, rotation[2] + tiltlimit);
+                }
 
-        if (timer < tiltinterval)
-        {
-            transform.rotation = Quaternion.Euler(rotation[0], rotation[1] + 0f, rotation[2] + tiltlimit);
-        }
-
-        if (timer > tiltinterval)
-        {
-            transform.rotation = Quaternion.Euler(rotation[0], rotation[1] + 0f, rotation[2] - tiltlimit);
-        }
+                if (timer > tiltinterval)
+                {
+                    transform.rotation = Quaternion.Euler(rotation[0], rotation[1] + 0f, rotation[2] - tiltlimit);
+                }
+            }
 
         //AI States
         switch (state)
@@ -190,7 +243,7 @@ public class AI : MonoBehaviour
         {
             if (flipflop == true)
             {
-                movefowardback = Random.Range(0f, -10f);
+                movefowardback = Random.Range(0f, -4f);
             }
             flipflop = false;
         }
@@ -200,7 +253,7 @@ public class AI : MonoBehaviour
         {
             if (flipflop == false)
             {
-                movefowardback = Random.Range(0f, 10f);
+                movefowardback = Random.Range(0f, 4f);
                 flipflop = true;
             }
         }
@@ -405,8 +458,15 @@ public class AI : MonoBehaviour
     public float dist;
     public float fails;
     public Renderer colourchange;
+    public float littletimer;
     void Beingserved()
     {
+        Speechbubble.enabled = true;
+        littletimer += Time.deltaTime;
+        if (littletimer > 2f)
+        {
+            Speechbubble.enabled = false;
+        }
         tiltlimit = 3f;
         tiltinterval = 0.4f;
         serveposition = GameObject.Find("ServePos");
