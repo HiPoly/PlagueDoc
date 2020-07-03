@@ -53,6 +53,8 @@ public class Actions : MonoBehaviour
         //add a thing
         if (Input.GetKeyDown(KeyCode.Space))
         {
+         
+
             if (stationNumber == 1)
             {
                 drug.Add(1);
@@ -67,21 +69,30 @@ public class Actions : MonoBehaviour
             }
             if (stationNumber == 4)
             {
-                drugfails = 1;
-                if (drug[0] != NPCoder[0])
+                if (drug.Count == 3f)
                 {
-                    drugfails += 1;
+                    drugfails = 1;
+                    if (drug[0] != NPCoder[0])
+                    {
+                        drugfails += 1;
+                    }
+
+                    if (drug[1] != NPCoder[1])
+                    {
+                        drugfails += 1;
+                    }
+
+                    if (drug[2] != NPCoder[2])
+                    {
+                        drugfails += 1;
+                    }
+                }
+         
+                if (drug.Count != 3f)
+                {
+                    drug.Clear();
                 }
 
-                if (drug[1] != NPCoder[1])
-                {
-                    drugfails += 1;
-                }
-
-                if (drug[2] != NPCoder[2])
-                {
-                    drugfails += 1;
-                }
 
                 drug.Clear();
                 NPCoder.Clear();

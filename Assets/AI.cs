@@ -16,17 +16,22 @@ public class AI : MonoBehaviour
     [Range(0f, 20f)]
     public float tiltlimit;
     private float timer;
+    private bool effectswitch;
 
     public State state = State.WALKINGPAST;
     private NPCManager NPCM;
     private Actions Player;
     public float wanttobuysomething;
     int placeOnList;
+    private bool once;
 
     public float fleeingspeed;
     public Animator animator;
     public SpriteRenderer Speechbubble;
     public SpriteRenderer ExclamationMark;
+    public ParticleSystem fire;
+    public ParticleSystem vomit;
+    public ParticleSystem stars;
     public enum State
     {
         WALKINGPAST,
@@ -48,6 +53,9 @@ public class AI : MonoBehaviour
     public float drinktimer;
     void OnEnable()
     {
+        fire.Pause(true);
+        stars.Pause(true);
+        vomit.Pause(true);
         buyrange = Random.Range(9f, -5f);
         state = State.WALKINGPAST;
         NPCM = GameObject.FindObjectOfType<NPCManager>();
@@ -398,16 +406,17 @@ public class AI : MonoBehaviour
             }
         }
     }
-
+    public int drugfails2;
     private float panicktimer;
     private bool panickbool;
     private bool startpanick;
     public float panickedrunspeed;
+    private float duration;
     void Panicking()
     {
         tiltlimit = 12;
         tiltinterval = 0.1f;
-
+        duration += Time.deltaTime;
         if (startpanick == false)
         {
             panicktimer = 6f;
@@ -449,6 +458,10 @@ public class AI : MonoBehaviour
             }
             panickbool = false;
         }
+        if(duration > 15f)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private GameObject serveposition;
@@ -463,6 +476,7 @@ public class AI : MonoBehaviour
     public float littletimer;
     void Beingserved()
     {
+        drinktimer += Time.deltaTime;
         Speechbubble.enabled = true;
         littletimer += Time.deltaTime;
         if (littletimer > 2f)
@@ -494,14 +508,10 @@ public class AI : MonoBehaviour
 
         if (finishedserving == true)
         {
-            animator.SetTrigger("Drink");
-            drinktimer += Time.deltaTime;
-            if (drinktimer > 1)
-            {
-                animator.ResetTrigger("Drink");
-                NPCM.RemoveNPC(gameObject);
-                state = State.LEAVING;
-            }
+           
+         NPCM.RemoveNPC(gameObject);
+         animator.SetTrigger("Drink");
+         finishedserving = false;
 
         }
         dist = Vector3.Distance(serveposition.transform.position, transform.position);
@@ -554,38 +564,78 @@ public class AI : MonoBehaviour
             Player.RecieveOrder(order[0],order[1],order[2]);
         }
 
-        fails = Player.drugfails;
+        if (Player.drugfails > 0f)
+        {
+            fails = Player.drugfails;
+            Player.drugfails = 0;
+        }
+
         if(fails == 1)
         {
+            
             colourchange = GetComponent<Renderer>();
             colourchange.material.SetColor("_Color",Color.green);
-            finishedserving = true;
-            Player.drugfails = 0;
+            
+
+
+            if (once == false)
+            {
+                drinktimer = 0f;
+                finishedserving = true;
+                effectswitch = true;
+                once = true;
+
+            }
+
         }
         if (fails > 1)
         {
+           
             colourchange = GetComponent<Renderer>();
             colourchange.material.SetColor("_Color", Color.red);
-            finishedserving = true;
-            Player.drugfails = 0;
-        }
-        if (fails == 0f)
-        {
-            finishedserving = false;
-            Player.drugfails = 0;
-        }
-    }
-
-    public void RecieveDrug(int drugfails)
-    {
-        if (drugfails > 0)
-        {
-            finishedserving = true;
+          
+           
+            if (once == false)
+            {
+                drinktimer = 0f;
+                finishedserving = true;
+                effectswitch = true;
+                once = true;
+            }
         }
 
-        if (drugfails == 0)
+        if (effectswitch == true)
         {
-            finishedserving = true;
+            if (drinktimer > 1f)
+            {
+                animator.ResetTrigger("Drink");
+                if (fails > 1)
+                {
+                    float effect = Random.Range(0f, 2f);
+                    if ((effect >= 0) & (effect < 1))
+                    {
+                        state = State.PANICKING;
+                        fire.Play(true);
+                        NPCM.RemoveNPC(gameObject);
+                    }
+                    if ((effect >= 1) & (effect <= 2))
+                    {
+                        state = State.LEAVING;
+                        vomit.Play(true);
+                        NPCM.RemoveNPC(gameObject);
+                    }
+
+
+                }
+                if (fails == 1)
+                {
+                    stars.Play(true);
+                    state = State.LEAVING;
+                    NPCM.RemoveNPC(gameObject);
+
+                }
+            }
+      
         }
     }
 }
