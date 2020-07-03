@@ -44,6 +44,8 @@ public class AI : MonoBehaviour
     public SpriteRenderer Paper;
     public SpriteRenderer Fireman;
     public SpriteRenderer Cowboy;
+
+    public float drinktimer;
     void OnEnable()
     {
         buyrange = Random.Range(9f, -5f);
@@ -188,18 +190,18 @@ public class AI : MonoBehaviour
                 Walkingpast();
                 gameObject.tag = "NPC";
                 previousState = state;
-                animator.ResetTrigger("Panic");
+              
                 break;
             case State.QUEUING:
                 Queuing();
                 gameObject.tag = "NPC";
                 previousState = state;
-                animator.ResetTrigger("Panic");
+                
                 break;
             case State.FLEEING:
                 Fleeing();
                 gameObject.tag = "NPC";
-                animator.ResetTrigger("Panic");
+              
                 break;
             case State.PANICKING:
                 Panicking();
@@ -210,13 +212,13 @@ public class AI : MonoBehaviour
                 Beingserved();
                 gameObject.tag = "NPC";
                 previousState = state;
-                animator.ResetTrigger("Panic");
+              
                 break;
             case State.LEAVING:
                 Leaving();
                 gameObject.tag = "NPC";
                 previousState = state;
-                animator.ResetTrigger("Panic");
+              
                 break;
 
         }
@@ -492,8 +494,15 @@ public class AI : MonoBehaviour
 
         if (finishedserving == true)
         {
-            NPCM.RemoveNPC(gameObject);
-            state = State.LEAVING;
+            animator.SetTrigger("Drink");
+            drinktimer += Time.deltaTime;
+            if (drinktimer > 1)
+            {
+                animator.ResetTrigger("Drink");
+                NPCM.RemoveNPC(gameObject);
+                state = State.LEAVING;
+            }
+
         }
         dist = Vector3.Distance(serveposition.transform.position, transform.position);
 
