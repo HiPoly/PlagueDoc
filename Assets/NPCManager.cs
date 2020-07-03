@@ -1,11 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 public class NPCManager : MonoBehaviour
 {
     public List<GameObject> Queue = new List<GameObject>();
+    public Text money;
+    public float moneyvalue;
+    public float timer;
+    public Text timertext;
 
+    private void Start()
+    {
+        timer = 200;
+    }
     public void AddNPC(GameObject NPC)
     {
         Queue.Add(NPC);
@@ -43,6 +52,9 @@ public class NPCManager : MonoBehaviour
     public int howfullisqueue;
     public void Update()
     {
+        timer -= Time.deltaTime;
+        money.text = moneyvalue.ToString();
+        timertext.text = timer.ToString();
         spawnTimer += Time.deltaTime;
         if (spawnTimer > spawnRate)
         {
@@ -52,6 +64,11 @@ public class NPCManager : MonoBehaviour
             Instantiate(NPC, transform.position, Quaternion.identity);
         }
         howfullisqueue = Queue.Count;
+
+        if (timer < 0f)
+        {
+            SceneManager.LoadScene("Start");
+        }
     }
 
     private Vector3 startPos;
@@ -59,4 +76,9 @@ public class NPCManager : MonoBehaviour
     {
         startPos = transform.position;
     }
+
+    public void addmoney()
+    {
+        moneyvalue += Random.Range(0, 6);
+    } 
 }

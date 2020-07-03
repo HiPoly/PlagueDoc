@@ -121,7 +121,7 @@ public class AI : MonoBehaviour
     //List of other objects in trigger coliders radius
     public List<GameObject> PanicCausersInRange = new List<GameObject>();
     public Collider other;
-
+    public float firedist;
 
     void OnTriggerStay(Collider other)
     {
@@ -131,7 +131,14 @@ public class AI : MonoBehaviour
             {
                 PanicCausersInRange.Add(other.attachedRigidbody.gameObject);
                 state = State.FLEEING;
+                firedist = Vector3.Distance(other.transform.position, transform.position);
+                if (firedist < 1.5f)
+                {
+                    state = State.PANICKING;
+                }
             }
+
+          
         }
     }
 
@@ -247,7 +254,7 @@ public class AI : MonoBehaviour
         {
             timer2 = 0f;
         }
-        moveleftright = -2.5f;
+        moveleftright = -5f;
         tiltlimit = 6f;
         if (timer2 < 2f)
         {
@@ -414,6 +421,7 @@ public class AI : MonoBehaviour
     private float duration;
     void Panicking()
     {
+        fire.Play(true);
         tiltlimit = 12;
         tiltinterval = 0.1f;
         duration += Time.deltaTime;
@@ -458,8 +466,9 @@ public class AI : MonoBehaviour
             }
             panickbool = false;
         }
-        if(duration > 15f)
+        if(duration > 8f)
         {
+            NPCM.RemoveNPC(gameObject);
             Destroy(gameObject);
         }
     }
@@ -512,6 +521,10 @@ public class AI : MonoBehaviour
          NPCM.RemoveNPC(gameObject);
          animator.SetTrigger("Drink");
          finishedserving = false;
+            if (fails == 1)
+            {
+                NPCM.addmoney();
+            }
 
         }
         dist = Vector3.Distance(serveposition.transform.position, transform.position);
@@ -615,7 +628,7 @@ public class AI : MonoBehaviour
                     if ((effect >= 0) & (effect < 1))
                     {
                         state = State.PANICKING;
-                        fire.Play(true);
+                        
                         NPCM.RemoveNPC(gameObject);
                     }
                     if ((effect >= 1) & (effect <= 2))
