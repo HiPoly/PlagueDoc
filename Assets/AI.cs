@@ -39,7 +39,8 @@ public class AI : MonoBehaviour
         FLEEING,
         PANICKING,
         BEINGSERVED,
-        LEAVING
+        LEAVING,
+        FIREFIGHTING
     }
     float buyrange;
     public float hatrandomizer;
@@ -130,15 +131,42 @@ public class AI : MonoBehaviour
             if (other.tag == ("DANGEROUSNPC"))
             {
                 PanicCausersInRange.Add(other.attachedRigidbody.gameObject);
-                state = State.FLEEING;
+                if (hatrandomizer != 14)
+                {
+                    state = State.FLEEING;
+                }
+
+                if (hatrandomizer == 14)
+                {
+                    state = State.FIREFIGHTING;
+                }
+
                 firedist = Vector3.Distance(other.transform.position, transform.position);
                 if (firedist < 1.5f)
                 {
-                    state = State.PANICKING;
+                    if (hatrandomizer != 14)
+                    {
+                        state = State.PANICKING;
+                    }
+                 
                 }
             }
-
+            
           
+        }
+        if (other.tag == "Firefighter")
+        {
+            float fightdist = Vector3.Distance(other.transform.position, transform.position);
+            if ((state == State.PANICKING) && (fightdist < 1))
+            {
+                fire.Stop(true);
+                animator.ResetTrigger("Panic");
+                animator.SetTrigger("StopPanicking");
+                gameObject.tag = "NPC";
+                state = State.LEAVING;
+                NPCM.RemoveNPC(gameObject);
+
+            }
         }
     }
 
@@ -163,6 +191,11 @@ public class AI : MonoBehaviour
         if (other.tag == "ground")
         {
             touchingGround = false;
+        }
+        if (state == State.FIREFIGHTING)
+        {
+            state = State.LEAVING;
+            NPCM.RemoveNPC(gameObject);
         }
     }
     private void OnTriggerEnter(Collider ground)
@@ -233,7 +266,13 @@ public class AI : MonoBehaviour
                 Leaving();
                 gameObject.tag = "NPC";
                 previousState = state;
-              
+
+                break;
+            case State.FIREFIGHTING:
+                Firefighting();
+                gameObject.tag = "Firefighter";
+                previousState = state;
+
                 break;
 
         }
@@ -243,6 +282,7 @@ public class AI : MonoBehaviour
     private bool flipflop;
     void Walkingpast()
     {
+        tiltinterval = 0.5f;
         if (NPCM.howfullisqueue > 12)
         {
             chancetobuy = 10f;
@@ -410,6 +450,19 @@ public class AI : MonoBehaviour
             if (AI != this)
             {
                 rb.AddForce((AI.gameObject.transform.position - transform.position).normalized * -fleeingspeed, ForceMode.Impulse);
+            }
+        }
+    }
+
+    void Firefighting()
+    {
+        //personal bubble
+        foreach (GameObject AI in PanicCausersInRange)
+        {
+            if (AI != this)
+            {
+                rb.AddForce((AI.gameObject.transform.position - transform.position).normalized * fleeingspeed, ForceMode.Impulse);
+                NPCM.RemoveNPC(gameObject);
             }
         }
     }

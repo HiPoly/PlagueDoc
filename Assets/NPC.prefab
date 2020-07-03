@@ -488,6 +488,7 @@ MonoBehaviour:
   chancetobuy: 0
   PanicCausersInRange: []
   other: {fileID: 1299583652}
+  firedist: 0
   drugfails2: 0
   panickedrunspeed: 12
   queueSpeed: 12
@@ -510,7 +511,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 2.37
+  m_Radius: 2.86
   m_Center: {x: 0, y: 1.69, z: 0}
 --- !u!65 &9001141810808371081
 BoxCollider:

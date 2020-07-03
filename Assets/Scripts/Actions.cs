@@ -107,12 +107,13 @@ public class Actions : MonoBehaviour
                     if (drug[2] != NPCoder[2])
                     {
                         drugfails += 1;
+                       
                     }
                 }
          
                 if (drug.Count != 3f)
                 {
-                    drug.Clear();
+                    drugfails += 3;
                 }
 
 
