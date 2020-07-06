@@ -32,6 +32,7 @@ public class AI : MonoBehaviour
     public ParticleSystem fire;
     public ParticleSystem vomit;
     public ParticleSystem stars;
+    public ParticleSystem water;
     public enum State
     {
         WALKINGPAST,
@@ -50,13 +51,15 @@ public class AI : MonoBehaviour
     public SpriteRenderer Paper;
     public SpriteRenderer Fireman;
     public SpriteRenderer Cowboy;
-
+    public SphereCollider spherecol;
     public float drinktimer;
     void OnEnable()
     {
         fire.Pause(true);
         stars.Pause(true);
         vomit.Pause(true);
+        water.Pause(true);
+
         buyrange = Random.Range(9f, -5f);
         state = State.WALKINGPAST;
         NPCM = GameObject.FindObjectOfType<NPCManager>();
@@ -90,6 +93,7 @@ public class AI : MonoBehaviour
         if (hatrandomizer == 14)
         {
             Fireman.enabled = true;
+            spherecol.radius = 10f;
         }
     }
     public bool queue;
@@ -115,6 +119,11 @@ public class AI : MonoBehaviour
             movefowardback = 0f;
             moveleftright = 0f;
 
+        }
+
+        if (transform.position.y < -4f)
+        {
+            NPCM.RemoveNPC(gameObject);
         }
         
     }
@@ -160,6 +169,8 @@ public class AI : MonoBehaviour
             if ((state == State.PANICKING) && (fightdist < 1))
             {
                 fire.Stop(true);
+                water.Play(true);
+
                 animator.ResetTrigger("Panic");
                 animator.SetTrigger("StopPanicking");
                 gameObject.tag = "NPC";
@@ -192,11 +203,15 @@ public class AI : MonoBehaviour
         {
             touchingGround = false;
         }
-        if (state == State.FIREFIGHTING)
+        if (PanicCausersInRange.Count == 0)
         {
-            state = State.LEAVING;
-            NPCM.RemoveNPC(gameObject);
+            if (state == State.FIREFIGHTING)
+            {
+                state = State.LEAVING;
+                NPCM.RemoveNPC(gameObject);
+            }
         }
+ 
     }
     private void OnTriggerEnter(Collider ground)
     {

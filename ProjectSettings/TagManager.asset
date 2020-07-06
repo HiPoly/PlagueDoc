@@ -7,6 +7,7 @@ TagManager:
   - NPC
   - DANGEROUSNPC
   - ground
+  - Firefighter
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - 
   - 
   - NPC
-  - 
+  - Firefighting
   - 
   - 
   - 
@@ -46,4 +47,7 @@ TagManager:
     locked: 0
   - name: Hat
     uniqueID: 3660583869
+    locked: 0
+  - name: UI
+    uniqueID: 3491775803
     locked: 0
