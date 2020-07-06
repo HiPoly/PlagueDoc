@@ -38,7 +38,7 @@ public class Actions : MonoBehaviour
     {
         if(timelimit > 1f)
         {
-            timelimit -= (Time.deltaTime / 50);
+            timelimit -= (Time.deltaTime / 30);
         }
  
         if ((takeorder == true) & (timerr >timelimit))

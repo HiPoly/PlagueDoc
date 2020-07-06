@@ -93,7 +93,7 @@ public class AI : MonoBehaviour
         if (hatrandomizer == 14)
         {
             Fireman.enabled = true;
-            spherecol.radius = 10f;
+            spherecol.radius = 7f;
         }
     }
     public bool queue;
@@ -184,6 +184,7 @@ public class AI : MonoBehaviour
     private State previousState;
     void OnTriggerExit(Collider other)
     {
+        PanicCausersInRange.Clear();
         if (state == State.FLEEING)
         {
             if (other.attachedRigidbody == null)
@@ -203,7 +204,7 @@ public class AI : MonoBehaviour
         {
             touchingGround = false;
         }
-        if (PanicCausersInRange.Count == 0)
+        if (PanicCausersInRange == null)
         {
             if (state == State.FIREFIGHTING)
             {
@@ -537,7 +538,8 @@ public class AI : MonoBehaviour
         if(duration > 8f)
         {
             NPCM.RemoveNPC(gameObject);
-            Destroy(gameObject);
+            transform.position = new Vector3(21.48f, -14.55f, -43.78f);
+            state = State.WALKINGPAST;
         }
     }
 
